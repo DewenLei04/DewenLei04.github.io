@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat('en', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+---
+
+<BaseLayout
+  title="Blog | Dewen Lei"
+  description="Writing and notes by Dewen Lei."
+>
+  <section class="page-header">
+    <p class="eyebrow">Blog</p>
+    <h1>Notes, essays, and working thoughts.</h1>
+    <p>
+      A chronological archive of writing. New posts are plain Markdown files in
+      <code>src/content/blog</code>.
+    </p>
+  </section>
+
+  <section class="post-list wide">
+    {
+      posts.map((post) => (
+        <article class="post-card">
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          <h2>
+            <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+          </h2>
+          <p>{post.data.description}</p>
+          {post.data.tags.length > 0 && (
+            <ul class="tag-list" aria-label={`Tags for ${post.data.title}`}>
+              {post.data.tags.map((tag) => (
+                <li>{tag}</li>
+              ))}
+            </ul>
+          )}
+        </article>
+      ))
+    }
+  </section>
+</BaseLayout>

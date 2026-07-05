@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat('en', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+---
+
+<BaseLayout
+  title="Dewen Lei"
+  description="Personal website and blog of Dewen Lei."
+>
+  <section class="hero">
+    <p class="eyebrow">Personal site and notes</p>
+    <h1>Thinking in public, building carefully, and keeping useful notes.</h1>
+    <p class="hero-copy">
+      This is my home on the web: a place for projects, learning logs, technical notes,
+      and thoughts that are still becoming sharper.
+    </p>
+    <div class="hero-actions">
+      <a class="button primary" href="/blog/">Read the blog</a>
+      <a class="button secondary" href="/about/">About me</a>
+    </div>
+  </section>
+
+  <section class="section-grid" aria-labelledby="latest-posts">
+    <div>
+      <p class="eyebrow">Latest writing</p>
+      <h2 id="latest-posts">Recent posts</h2>
+    </div>
+    <div class="post-list">
+      {
+        posts.map((post) => (
+          <article class="post-card">
+            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+            <h3>
+              <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+            </h3>
+            <p>{post.data.description}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

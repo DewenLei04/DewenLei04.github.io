@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { siteLinks } from '../data/siteLinks';
 
 interface Props {
   title: string;
@@ -8,17 +9,20 @@ interface Props {
 
 const {
   title,
-  description = 'Personal website and blog of Dewen Lei.',
+  description = 'Dewen Lei is a Computational Mathematics student at the University of Waterloo writing about software engineering, algorithms, AI systems, backend engineering, and applied mathematics.',
 } = Astro.props;
 
 const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/blog/', label: 'Blog' },
-  { href: '/about/', label: 'About' },
+  { href: '/blog/', label: 'Writing' },
+  { href: siteLinks.resume, label: 'Resume' },
+  { href: siteLinks.github, label: 'GitHub' },
+  { href: siteLinks.linkedin, label: 'LinkedIn' },
 ];
 
 const isActive = (href: string) =>
-  href === '/' ? Astro.url.pathname === href : Astro.url.pathname.startsWith(href);
+  href.startsWith('/') && href !== siteLinks.resume
+    ? Astro.url.pathname.startsWith(href)
+    : false;
 ---
 
 <!doctype html>
@@ -36,7 +40,12 @@ const isActive = (href: string) =>
       <nav aria-label="Main navigation">
         {
           navItems.map((item) => (
-            <a href={item.href} class:list={{ active: isActive(item.href) }}>
+            <a
+              href={item.href}
+              class:list={{ active: isActive(item.href) }}
+              target={item.href.startsWith('http') ? '_blank' : undefined}
+              rel={item.href.startsWith('http') ? 'noreferrer' : undefined}
+            >
               {item.label}
             </a>
           ))
@@ -47,7 +56,17 @@ const isActive = (href: string) =>
       <slot />
     </main>
     <footer class="site-footer">
-      <p>Built with Astro. Published on GitHub Pages.</p>
+      <div>
+        <strong>Dewen Lei</strong>
+        <p>Software Engineering · Computational Mathematics · AI Systems</p>
+      </div>
+      <nav aria-label="Footer links">
+        <a href={siteLinks.github} target="_blank" rel="noreferrer">GitHub</a>
+        <a href={siteLinks.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+        <a href={siteLinks.resume}>Resume</a>
+        <a href={siteLinks.email}>Email</a>
+      </nav>
+      <p>Built with Astro. Deployed on GitHub Pages.</p>
     </footer>
   </body>
 </html>

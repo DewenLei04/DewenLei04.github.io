@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteLinks } from '../data/siteLinks';
 
 const posts = (await getCollection('blog'))
   .filter((post) => !post.data.draft)
@@ -16,29 +17,60 @@ const formatDate = (date: Date) =>
 
 const categorySlug = (category: string) =>
   category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+const profileJson = JSON.stringify(
+  {
+    school: 'University of Waterloo',
+    field: 'Computational Mathematics',
+    focus: ['software engineering', 'AI systems', 'algorithms'],
+    stack: ['Python', 'TypeScript', 'React', 'Node.js', 'SQL', 'Docker'],
+  },
+  null,
+  2
+);
 ---
 
 <BaseLayout
   title="Dewen Lei"
-  description="Personal website and blog of Dewen Lei."
+  description="Dewen Lei is a Computational Mathematics student at the University of Waterloo writing about software engineering, algorithms, AI systems, backend engineering, and applied mathematics."
 >
   <section class="hero">
-    <p class="eyebrow">Personal website</p>
-    <h1>Selected writing, technical notes, and project work.</h1>
-    <p class="hero-copy">
-      A focused home for essays, engineering reflections, learning notes, and
-      work that benefits from a more permanent place than a feed.
-    </p>
-    <div class="hero-actions">
-      <a class="button primary" href="/blog/">Read the blog</a>
-      <a class="button secondary" href="/about/">About me</a>
+    <div class="hero-content">
+      <p class="eyebrow">Computational Mathematics · Software Engineering</p>
+      <h1>Dewen Lei</h1>
+      <p class="identity-line">
+        Computational Mathematics student at the University of Waterloo.
+      </p>
+      <p class="hero-copy">
+        I write about software engineering, algorithms, AI systems, and applied
+        mathematics. This site is my public technical notebook: a place to
+        document what I learn, what I misunderstand, and how my understanding
+        changes over time.
+      </p>
+      <p class="focus-line">
+        Currently focused on backend engineering, AI tools, algorithms, and systems.
+      </p>
+      <div class="hero-actions" aria-label="Primary links">
+        <a class="button primary" href={siteLinks.email}>Email</a>
+        <a class="button secondary" href={siteLinks.github} target="_blank" rel="noreferrer">GitHub</a>
+        <a class="button secondary" href={siteLinks.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+        <a class="button secondary" href={siteLinks.resume}>Resume</a>
+      </div>
     </div>
+
+    <aside class="profile-card" aria-label="Technical profile">
+      <div class="code-window-bar">
+        <span>profile.json</span>
+        <span class="code-dot"></span>
+      </div>
+      <pre><code>{profileJson}</code></pre>
+    </aside>
   </section>
 
   <section class="section-grid" aria-labelledby="latest-posts">
     <div>
       <p class="eyebrow">Latest writing</p>
-      <h2 id="latest-posts">Recent posts</h2>
+      <h2 id="latest-posts">Recent notes</h2>
     </div>
     <div class="post-list">
       {
@@ -58,5 +90,15 @@ const categorySlug = (category: string) =>
         ))
       }
     </div>
+  </section>
+
+  <section class="site-note" aria-labelledby="about-this-site">
+    <p class="eyebrow">About this site</p>
+    <h2 id="about-this-site">A technical notebook for learning in public.</h2>
+    <p>
+      This site is a technical notebook for software engineering, algorithms, AI
+      systems, and mathematical ideas I am learning. I use it to make my
+      understanding explicit and reusable.
+    </p>
   </section>
 </BaseLayout>

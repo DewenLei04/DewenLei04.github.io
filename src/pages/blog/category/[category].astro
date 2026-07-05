@@ -1,0 +1,94 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const categorySlug = (category: string) =>
+  category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+export async function getStaticPaths() {
+  const toCategorySlug = (category: string) =>
+    category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
+  const categories = Array.from(new Set(posts.map((post) => post.data.category))).sort((a, b) =>
+    a.localeCompare(b)
+  );
+
+  return categories.map((category) => ({
+    params: { category: toCategorySlug(category) },
+    props: { category },
+  }));
+}
+
+const allPosts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const categories = Array.from(new Set(allPosts.map((post) => post.data.category))).sort((a, b) =>
+  a.localeCompare(b)
+);
+const { category } = Astro.props;
+const posts = allPosts.filter((post) => post.data.category === category);
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat('en', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+---
+
+<BaseLayout
+  title={`${category} | Blog | Dewen Lei`}
+  description={`Writing in the ${category} category by Dewen Lei.`}
+>
+  <section class="page-header">
+    <p class="eyebrow">Category</p>
+    <h1>{category}</h1>
+    <p>{posts.length} {posts.length === 1 ? 'post' : 'posts'} in this category.</p>
+  </section>
+
+  <section class="blog-layout">
+    <aside class="category-panel" aria-labelledby="categories-title">
+      <h2 id="categories-title">Categories</h2>
+      <a class="category-filter" href="/blog/">All writing</a>
+      {
+        categories.map((item) => (
+          <a
+            class:list={{
+              'category-filter': true,
+              active: item === category,
+            }}
+            href={`/blog/category/${categorySlug(item)}/`}
+          >
+            {item}
+          </a>
+        ))
+      }
+    </aside>
+
+    <div class="post-list wide">
+      {
+        posts.map((post) => (
+          <article class="post-card">
+            <div class="post-card-meta">
+              <a class="category-link" href={`/blog/category/${categorySlug(post.data.category)}/`}>
+                {post.data.category}
+              </a>
+              <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+            </div>
+            <h2>
+              <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+            </h2>
+            <p>{post.data.description}</p>
+            {post.data.tags.length > 0 && (
+              <ul class="tag-list" aria-label={`Tags for ${post.data.title}`}>
+                {post.data.tags.map((tag) => (
+                  <li>{tag}</li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

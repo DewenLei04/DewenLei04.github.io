@@ -1,6 +1,7 @@
 ---
 title: "Starting This Site"
 description: "A short first note about what this website is for."
+category: "Personal Notes"
 pubDate: 2026-07-04
 tags: ["personal", "meta"]
 ---

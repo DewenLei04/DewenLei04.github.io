@@ -4,18 +4,20 @@ import BaseLayout from './BaseLayout.astro';
 interface Props {
   title: string;
   description: string;
+  category: string;
   pubDate: Date;
   updatedDate?: Date;
   tags?: string[];
 }
 
-const { title, description, pubDate, updatedDate, tags = [] } = Astro.props;
+const { title, description, category, pubDate, updatedDate, tags = [] } = Astro.props;
 const formatDate = (date: Date) =>
   new Intl.DateTimeFormat('en', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   }).format(date);
+const categorySlug = category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 ---
 
 <BaseLayout title={`${title} | Dewen Lei`} description={description}>
@@ -25,6 +27,7 @@ const formatDate = (date: Date) =>
       <h1>{title}</h1>
       <p class="post-description">{description}</p>
       <div class="post-meta">
+        <a class="category-link" href={`/blog/category/${categorySlug}/`}>{category}</a>
         <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
         {updatedDate && <span>Updated {formatDate(updatedDate)}</span>}
       </div>

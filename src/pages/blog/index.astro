@@ -12,6 +12,13 @@ const formatDate = (date: Date) =>
     month: 'long',
     day: 'numeric',
   }).format(date);
+
+const categorySlug = (category: string) =>
+  category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+const categories = Array.from(new Set(posts.map((post) => post.data.category))).sort((a, b) =>
+  a.localeCompare(b)
+);
 ---
 
 <BaseLayout
@@ -20,18 +27,36 @@ const formatDate = (date: Date) =>
 >
   <section class="page-header">
     <p class="eyebrow">Blog</p>
-    <h1>Notes, essays, and working thoughts.</h1>
+    <h1>Writing organized by subject and intent.</h1>
     <p>
-      A chronological archive of writing. New posts are plain Markdown files in
-      <code>src/content/blog</code>.
+      Essays, notes, and technical reflections. Each post belongs to a category
+      and can still carry more specific tags.
     </p>
   </section>
 
-  <section class="post-list wide">
+  <section class="blog-layout">
+    <aside class="category-panel" aria-labelledby="categories-title">
+      <h2 id="categories-title">Categories</h2>
+      <a class="category-filter active" href="/blog/">All writing</a>
+      {
+        categories.map((category) => (
+          <a class="category-filter" href={`/blog/category/${categorySlug(category)}/`}>
+            {category}
+          </a>
+        ))
+      }
+    </aside>
+
+    <div class="post-list wide">
     {
       posts.map((post) => (
         <article class="post-card">
-          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          <div class="post-card-meta">
+            <a class="category-link" href={`/blog/category/${categorySlug(post.data.category)}/`}>
+              {post.data.category}
+            </a>
+            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          </div>
           <h2>
             <a href={`/blog/${post.id}/`}>{post.data.title}</a>
           </h2>
@@ -46,5 +71,6 @@ const formatDate = (date: Date) =>
         </article>
       ))
     }
+    </div>
   </section>
 </BaseLayout>

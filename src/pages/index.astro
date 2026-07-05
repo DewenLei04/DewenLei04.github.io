@@ -13,6 +13,9 @@ const formatDate = (date: Date) =>
     month: 'short',
     day: 'numeric',
   }).format(date);
+
+const categorySlug = (category: string) =>
+  category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 ---
 
 <BaseLayout
@@ -20,11 +23,11 @@ const formatDate = (date: Date) =>
   description="Personal website and blog of Dewen Lei."
 >
   <section class="hero">
-    <p class="eyebrow">Personal site and notes</p>
-    <h1>Thinking in public, building carefully, and keeping useful notes.</h1>
+    <p class="eyebrow">Personal website</p>
+    <h1>Selected writing, technical notes, and project work.</h1>
     <p class="hero-copy">
-      This is my home on the web: a place for projects, learning logs, technical notes,
-      and thoughts that are still becoming sharper.
+      A focused home for essays, engineering reflections, learning notes, and
+      work that benefits from a more permanent place than a feed.
     </p>
     <div class="hero-actions">
       <a class="button primary" href="/blog/">Read the blog</a>
@@ -41,7 +44,12 @@ const formatDate = (date: Date) =>
       {
         posts.map((post) => (
           <article class="post-card">
-            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+            <div class="post-card-meta">
+              <a class="category-link" href={`/blog/category/${categorySlug(post.data.category)}/`}>
+                {post.data.category}
+              </a>
+              <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+            </div>
             <h3>
               <a href={`/blog/${post.id}/`}>{post.data.title}</a>
             </h3>

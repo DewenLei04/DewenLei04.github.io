@@ -16,6 +16,9 @@ const navItems = [
   { href: '/blog/', label: 'Blog' },
   { href: '/about/', label: 'About' },
 ];
+
+const isActive = (href: string) =>
+  href === '/' ? Astro.url.pathname === href : Astro.url.pathname.startsWith(href);
 ---
 
 <!doctype html>
@@ -33,7 +36,7 @@ const navItems = [
       <nav aria-label="Main navigation">
         {
           navItems.map((item) => (
-            <a href={item.href} class:list={{ active: Astro.url.pathname === item.href }}>
+            <a href={item.href} class:list={{ active: isActive(item.href) }}>
               {item.label}
             </a>
           ))

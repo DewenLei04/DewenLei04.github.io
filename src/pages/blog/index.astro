@@ -9,7 +9,7 @@ const posts = (await getCollection('blog'))
 const formatDate = (date: Date) =>
   new Intl.DateTimeFormat('en', {
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric',
   }).format(date);
 
@@ -22,47 +22,50 @@ const categories = Array.from(new Set(posts.map((post) => post.data.category))).
 ---
 
 <BaseLayout
-  title="Blog | Dewen Lei"
-  description="Writing and notes by Dewen Lei."
+  title="Writing | Dewen Lei"
+  description="Technical notes on software engineering, algorithms, AI systems, and applied mathematics by Dewen Lei."
 >
-  <section class="page-header">
-    <p class="eyebrow">Blog</p>
-    <h1>Writing organized by subject and intent.</h1>
+  <section class="archive-header">
+    <p class="eyebrow">WRITING</p>
+    <h1>Technical notes</h1>
     <p>
-      Essays, notes, and technical reflections. Each post belongs to a category
-      and can still carry more specific tags.
+      Notes on software engineering, algorithms, AI systems, and applied mathematics.
+    </p>
+    <p>
+      I use these notes to clarify concepts, record mistakes, and preserve
+      explanations that may be useful later.
     </p>
   </section>
 
-  <section class="blog-layout">
-    <aside class="category-panel" aria-labelledby="categories-title">
-      <h2 id="categories-title">Categories</h2>
-      <a class="category-filter active" href="/blog/">All writing</a>
+  <section class="archive-shell">
+    <div class="category-chips" aria-label="Writing categories">
+      <a class="category-chip active" href="/blog/">All</a>
       {
         categories.map((category) => (
-          <a class="category-filter" href={`/blog/category/${categorySlug(category)}/`}>
+          <a class="category-chip" href={`/blog/category/${categorySlug(category)}/`}>
             {category}
           </a>
         ))
       }
-    </aside>
+    </div>
 
-    <div class="post-list wide">
+    <div class="writing-list">
     {
       posts.map((post) => (
-        <article class="post-card">
-          <div class="post-card-meta">
+        <article class="writing-entry">
+          <div class="writing-meta">
+            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+            <span aria-hidden="true">·</span>
             <a class="category-link" href={`/blog/category/${categorySlug(post.data.category)}/`}>
               {post.data.category}
             </a>
-            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
           </div>
           <h2>
             <a href={`/blog/${post.id}/`}>{post.data.title}</a>
           </h2>
           <p>{post.data.description}</p>
           {post.data.tags.length > 0 && (
-            <ul class="tag-list" aria-label={`Tags for ${post.data.title}`}>
+            <ul class="compact-tag-list" aria-label={`Tags for ${post.data.title}`}>
               {post.data.tags.map((tag) => (
                 <li>{tag}</li>
               ))}
